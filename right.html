@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Transition Slideshow with Alert Box</title>
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-L0T7X0BY7J"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-L0T7X0BY7J');
+    </script>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+
+    <!-- Firebase config -->
+    <script src="../../../../js/firebase-config.js"></script>
+
+    <style>
+      body {
+        background-color: transparent;
+        margin: 0;
+        padding: 0;
+      }
+
+      /* Slideshow container */
+      .slideshow {
+        position: relative;
+        width: 300px;
+        height: 120px; /* Increased height to fit the activity feed */
+        overflow: hidden; /* Ensure content doesn't overflow the container */
+      }
+
+      /* Slide styling */
+      .slide {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: none;
+      }
+
+      .slide iframe,
+      .slide img {
+        width: 100%;
+        height: 100%;
+      }
+
+      /* Crop follower count iframes by shifting them left */
+      .crop-frame {
+        position: relative;
+        width: 350px; /* Increased width to account for cropping */
+        height: 100%;
+        left: -80px; /* Shift iframe content to the left */
+      }
+
+      /* New wrapper for follower counts */
+      .follower-wrapper {
+        position: relative;
+        top: 2px; /* Move follower counts down by 2px */
+      }
+
+      /* The first slide should be visible by default */
+      .slide:first-child {
+        display: block;
+      }
+    </style>
+  </head>
+  <body class="checking-auth">
+    <!-- Shared Authentication Guard -->
+    <script src="../../../../js/auth-guard.js"></script>
+    
+    <!-- Shared ForOBS Authentication -->
+    <script src="../../shared.js"></script>
+    
+    <!-- Slideshow container -->
+    <div class="slideshow">
+      <div class="slide">
+        <div class="crop-frame">
+          <div class="follower-wrapper">
+            <iframe
+              src="https://livecounts.io/embed/twitch-live-follower-counter/cbtstreams"
+              frameborder="0"
+            ></iframe>
+          </div>
+        </div>
+      </div>
+      <div class="slide">
+        <div class="crop-frame">
+          <div class="follower-wrapper">
+            <iframe
+              src="https://livecounts.io/embed/youtube-live-subscriber-counter/UCgfkdHGl18cr1xkIDkG0g7g"
+              frameborder="0"
+            ></iframe>
+          </div>
+        </div>
+      </div>
+      <div class="slide">
+        <div class="crop-frame">
+          <div class="follower-wrapper">
+            <iframe
+              src="https://livecounts.io/embed/kick-live-follower-counter/cbtstreams"
+              frameborder="0"
+            ></iframe>
+          </div>
+        </div>
+      </div>
+      <div class="slide">
+        <div class="crop-frame">
+          <div class="follower-wrapper">
+            <iframe
+              src="https://livecounts.io/embed/youtube-live-subscriber-counter/UCqBktAcBNd3pgOTEOjf6jIA"
+              frameborder="0"
+            ></iframe>
+          </div>
+        </div>
+      </div>
+      <div class="slide">
+        <div class="crop-frame">
+          <div class="follower-wrapper">
+            <iframe
+              src="https://livecounts.io/embed/twitter-live-follower-counter/cbtwizard"
+              frameborder="0"
+           ></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Slideshow transition and Botrix alert logic -->
+    <script>
+      $(document).ready(function () {
+        var slides = $(".slide");
+        var currentIndex = 0;
+        var totalSlides = slides.length;
+
+        function transitionSlides() {
+          var currentSlide = slides.eq(currentIndex);
+          var nextIndex = (currentIndex + 1) % totalSlides;
+          var nextSlide = slides.eq(nextIndex);
+
+          currentSlide.fadeOut(1000, function () {
+            currentSlide.hide();
+            nextSlide.fadeIn(1000);
+          });
+
+          currentIndex = nextIndex;
+          setTimeout(transitionSlides, 7000); // Transition every 7 seconds
+        }
+
+        transitionSlides();
+
+        // Botrix message handling for alert box
+        function handleBotrixMessage(event) {
+          if (
+            event.origin === "https://botrix.live" &&
+            event.data === "alert"
+          ) {
+            $("#botrixAlertBox").show(); // Show Botrix alert
+          }
+        }
+
+        // Listen for Botrix alert messages
+        window.addEventListener("message", handleBotrixMessage);
+
+        // Optional: Example to simulate Twitch follow event
+        function handleTwitchFollow() {
+          $("#botrixAlertBox").attr(
+            "src",
+            $("#botrixAlertBox").attr("src") + "&ts=" + new Date().getTime()
+          );
+        }
+
+        // Simulate a follow event for testing after 1 second (Optional)
+        // setTimeout(handleTwitchFollow, 1000);
+      });
+    </script>
+  </body>
+</html>
