@@ -32,7 +32,9 @@
       <iframe id="botrixActivityFeed" src="https://botrix.live/widgets/activityfeed/"></iframe>
     </div>
     <div class="slide">
-      <img id="cyclingImage" src="" alt="Cycling Image" style="display:none;">
+      <!-- Two images preloaded in HTML – OBS loves this -->
+      <img id="cyclingImage" src="https://cbtland.github.io/widget/rumble7.png" alt="Ad" style="display:none;">
+      <img src="https://cbtland.github.io/widget/boosteroid-partner.png" style="display:none;" onload="this.setAttribute('data-loaded', '1')">
     </div>
   </div>
 
@@ -41,71 +43,39 @@
   <script>
     $(document).ready(function () {
       const $slides = $(".slide");
-      const $img = $('#cyclingImage');
+      const $img = $("#cyclingImage");
       let currentIndex = 0;
-      const totalSlides = $slides.length;
 
-      const imageArray = [
+      const images = [
         "https://cbtland.github.io/widget/rumble7.png",
         "https://cbtland.github.io/widget/boosteroid-partner.png"
       ];
-      let currentImageIndex = 0;
+      let imgIndex = 0;
 
-      // === SAFE PRELOAD + localStorage CACHING ===
-      function cacheImage(src) {
-        const key = 'img_' + btoa(src);
-        const cached = localStorage.getItem(key);
-        if (cached) return cached;  // already cached
-
-        const img = new Image();
-        img.onload = function() {
-          const canvas = document.createElement('canvas');
-          canvas.width = this.naturalWidth;
-          canvas.height = this.naturalHeight;
-          canvas.getContext('2d').drawImage(this, 0, 0);
-          try {
-            localStorage.setItem(key, canvas.toDataURL('image/png'));
-          } catch(e) {
-            console.warn("localStorage full, skipping cache");
-          }
-        };
-        img.src = src;
-        return src; // return original until cached
-      }
-
-      // Pre-warm the cache for both images
-      imageArray.forEach(cacheImage);
-
-      // === Set initial image (use cached version if available) ===
-      function getBestSrc(src) {
-        return localStorage.getItem('img_' + btoa(src)) || src;
-      }
-
-      // Set first image (will be instant on repeat visits)
-      $img.attr('src', getBestSrc(imageArray[0])).show();
-
-      // Show first slide (Botrix feed)
+      // Show Botrix first
       $slides.hide().eq(0).show();
 
-      // === TRANSITION LOGIC ===
-      function transitionSlides() {
-        const nextIndex = (currentIndex + 1) % totalSlides;
+      // Switch image when going to slide 1
+      function showNextImage() {
+        $img.attr("src", images[imgIndex]);
+        imgIndex = (imgIndex + 1) % images.length;
+      }
 
-        if (nextIndex === 1) {
-          const nextSrc = imageArray[currentImageIndex];
-          $img.attr('src', getBestSrc(nextSrc));
-          currentImageIndex = (currentImageIndex + 1) % imageArray.length;
-        }
+      function transitionSlides() {
+        const next = (currentIndex + 1) % 2;
+
+        if (next === 1) showNextImage();  // change image before fade
 
         $slides.eq(currentIndex).fadeOut(1800, function () {
           $(this).hide();
-          $slides.eq(nextIndex).fadeIn(1800);
+          $slides.eq(next).fadeIn(1800);
         });
 
-        currentIndex = nextIndex;
+        currentIndex = next;
         setTimeout(transitionSlides, 7000);
       }
 
+      // Start cycle
       setTimeout(transitionSlides, 7000);
     });
 
