@@ -39,10 +39,6 @@
       border-radius: 10px;
     }
 
-    .slide.active {
-      display: block;
-    }
-
     #botrixAlertBox {
       display: none;
       position: absolute;
@@ -66,76 +62,71 @@
 <body class="checking-auth">
 
   <!-- Botrix alert box -->
-  <iframe
-    id="botrixAlertBox"
-    src="https://botrix.live/alerts?bid=Vw%2Bc%2FCANc%2F1S5eA%2FevZ%2B5w"
-  ></iframe>
+  <iframe id="botrixAlertBox"
+    src="https://botrix.live/alerts?bid=Vw%2Bc%2FCANc%2F1S5eA%2FevZ%2B5w">
+  </iframe>
 
   <!-- Slideshow container -->
   <div class="slideshow">
     <div class="slide">
-      <iframe
-        id="botrixActivityFeed"
-        src="https://botrix.live/widgets/activityfeed/"
-      ></iframe>
+      <iframe id="botrixActivityFeed"
+        src="https://botrix.live/widgets/activityfeed/">
+      </iframe>
     </div>
     <div class="slide">
-      <img
-        id="cyclingImage"
+      <img id="cyclingImage"
         src="https://cbtland.github.io/widget/rumble7.png"
-        alt="Cycling Image"
-        onerror="console.error('❌ Image failed to load:', this.src); this.style.display='none';"
-        onload="console.log('✅ Image loaded:', this.src); this.style.display='block';"
-      />
+        alt="Cycling Image">
     </div>
   </div>
 
-  <!-- jQuery -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-  <!-- Slideshow logic -->
   <script>
     $(document).ready(function () {
-      var slides = $(".slide");
-      var currentIndex = 0;
-      var totalSlides = slides.length;
+      const $slides = $(".slide");
+      let currentIndex = 0;
+      const totalSlides = $slides.length;
 
-      var imageArray = [
+      const imageArray = [
         "https://cbtland.github.io/widget/rumble7.png",
         "https://cbtland.github.io/widget/boosteroid-partner.png"
       ];
-      var currentImageIndex = 0;
+      let currentImageIndex = 0;
+
+      // Show first slide immediately
+      $slides.hide().eq(0).show();
 
       function transitionSlides() {
-        var currentSlide = slides.eq(currentIndex);
-        var nextIndex = (currentIndex + 1) % totalSlides;
-        var nextSlide = slides.eq(nextIndex);
+        const nextIndex = (currentIndex + 1) % totalSlides;
 
+        // If we're going to the image slide, change the image
         if (nextIndex === 1) {
-          var cyclingImage = document.getElementById('cyclingImage');
-          if (cyclingImage && imageArray.length > 0) {
-            cyclingImage.src = imageArray[currentImageIndex];
+          const img = document.getElementById('cyclingImage');
+          if (img && imageArray.length > 0) {
+            img.src = imageArray[currentImageIndex];
             currentImageIndex = (currentImageIndex + 1) % imageArray.length;
           }
         }
 
-        currentSlide.fadeOut(1000, function () {
-          currentSlide.removeClass('active').hide();
-          nextSlide.addClass('active').fadeIn(1000);
+        $slides.eq(currentIndex).fadeOut(1000, function () {
+          $(this).hide();
+          $slides.eq(nextIndex).fadeIn(1000);
         });
 
         currentIndex = nextIndex;
-        setTimeout(transitionSlides, 7000);
+        setTimeout(transitionSlides, 7000); // exactly 7 seconds from now
       }
 
-      slides.eq(0).addClass('active').show();
+      // Start after first 7-second display
       setTimeout(transitionSlides, 7000);
+    });
 
-      window.addEventListener("message", function (event) {
-        if (event.origin === "https://botrix.live" && event.data === "alert") {
-          $("#botrixAlertBox").show();
-        }
-      });
+    // Botrix alert handling
+    window.addEventListener("message", function (event) {
+      if (event.origin === "https://botrix.live" && event.data === "alert") {
+        $("#botrixAlertBox").show();
+      }
     });
   </script>
 </body>
