@@ -19,6 +19,9 @@
       width: 300px; height: 80px; border: none;
     }
     #botrixActivityFeed { width: 400px; height: 120px; border: none; position: relative; top: -43px; }
+    
+    /* Preload both images instantly — OBS can't block this */
+    .preload { position: absolute; left: -9999px; top: -9999px; opacity: 0; }
   </style>
 </head>
 <body class="checking-auth">
@@ -27,59 +30,59 @@
     src="https://botrix.live/alerts?bid=Vw%2Bc%2FCANc%2F1S5eA%2FevZ%2B5w">
   </iframe>
 
+  <!-- Preload both images off-screen so they're ready instantly -->
+  <img class="preload" src="https://cbtland.github.io/widget/rumble7.png" alt="">
+  <img class="preload" src="https://cbtland.github.io/widget/boosteroid-partner.png" alt="">
+
   <div class="slideshow">
     <div class="slide">
       <iframe id="botrixActivityFeed" src="https://botrix.live/widgets/activityfeed/"></iframe>
     </div>
     <div class="slide">
-      <!-- Two images preloaded in HTML – OBS loves this -->
-      <img id="cyclingImage" src="https://cbtland.github.io/widget/rumble7.png" alt="Ad" style="display:none;">
-      <img src="https://cbtland.github.io/widget/boosteroid-partner.png" style="display:none;" onload="this.setAttribute('data-loaded', '1')">
+      <img id="cyclingImage" src="https://cbtland.github.io/widget/rumble7.png" alt="Cycling Image">
     </div>
   </div>
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
   <script>
     $(document).ready(function () {
       const $slides = $(".slide");
-      const $img = $("#cyclingImage");
       let currentIndex = 0;
+      const totalSlides = $slides.length;
 
-      const images = [
+      const imageArray = [
         "https://cbtland.github.io/widget/rumble7.png",
         "https://cbtland.github.io/widget/boosteroid-partner.png"
       ];
-      let imgIndex = 0;
+      let currentImageIndex = 0;
 
-      // Show Botrix first
+      // Show first slide immediately
       $slides.hide().eq(0).show();
 
-      // Switch image when going to slide 1
-      function showNextImage() {
-        $img.attr("src", images[imgIndex]);
-        imgIndex = (imgIndex + 1) % images.length;
-      }
-
       function transitionSlides() {
-        const next = (currentIndex + 1) % 2;
+        const nextIndex = (currentIndex + 1) % totalSlides;
 
-        if (next === 1) showNextImage();  // change image before fade
+        // Change image BEFORE fade starts → already loaded → no flash
+        if (nextIndex === 1) {
+          const nextSrc = imageArray[currentImageIndex];
+          $('#cyclingImage').attr('src', nextSrc);
+          currentImageIndex = (currentImageIndex + 1) % imageArray.length;
+        }
 
         $slides.eq(currentIndex).fadeOut(1800, function () {
           $(this).hide();
-          $slides.eq(next).fadeIn(1800);
+          $slides.eq(nextIndex).fadeIn(1800);
         });
 
-        currentIndex = next;
+        currentIndex = nextIndex;
         setTimeout(transitionSlides, 7000);
       }
 
-      // Start cycle
+      // Start after first 7 seconds
       setTimeout(transitionSlides, 7000);
     });
 
-    // Botrix alert
+    // Botrix alerts
     window.addEventListener("message", function (event) {
       if (event.origin === "https://botrix.live" && event.data === "alert") {
         $("#botrixAlertBox").show();
