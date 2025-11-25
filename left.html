@@ -36,49 +36,74 @@
     </div>
   </div>
 
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script>
-    $(document).ready(function () {
-      const $slides = $(".slide");
-      let currentIndex = 0;
-      const totalSlides = $slides.length;
+<script>
+  $(document).ready(function () {
+    const $slides = $(".slide");
+    let currentIndex = 0;
+    const totalSlides = $slides.length;
 
-      const imageArray = [
-        "https://cbtland.github.io/widget/rumble7.png",
-        "https://cbtland.github.io/widget/boosteroid-partner.png"
-      ];
-      let currentImageIndex = 0;
+    const imageArray = [
+      "https://cbtland.github.io/widget/rumble7.png",
+      "https://cbtland.github.io/widget/boosteroid-partner.png"
+    ];
+    let currentImageIndex = 0;
 
-      $slides.hide().eq(0).show();
-
-      function transitionSlides() {
-        const nextIndex = (currentIndex + 1) % totalSlides;
-
-        if (nextIndex === 1) {
-          const img = document.getElementById('cyclingImage');
-          if (img && imageArray.length > 0) {
-            img.src = imageArray[currentImageIndex];
-            currentImageIndex = (currentImageIndex + 1) % imageArray.length;
+    // === PRELOAD IMAGES INTO CACHE (eliminates pop-in forever) ===
+    function preloadImages() {
+      imageArray.forEach(src => {
+        const img = new Image();
+        img.src = src;
+        // Optional: also save to localStorage as base64 for ultra-offline resilience
+        img.onload = function() {
+          if (!localStorage.getItem('preloaded_' + btoa(src))) {
+            const canvas = document.createElement('canvas');
+            canvas.width = this.naturalWidth;
+            canvas.height = this.naturalHeight;
+            canvas.getContext('2d').drawImage(this, 0, 0);
+            localStorage.setItem('preloaded_' + btoa(src), canvas.toDataURL('image/png'));
           }
-        }
+        };
+      });
+    }
+    preloadImages();
 
-        $slides.eq(currentIndex).fadeOut(1800, function () {
-          $(this).hide();
-          $slides.eq(nextIndex).fadeIn(1800);
-        });
+    // Also try to use localStorage version if network is slow/offline
+    const $cyclingImg = $('#cyclingImage');
+    if (localStorage.getItem('preloaded_' + btoa(imageArray[0]))) {
+      $cyclingImg.attr('src', localStorage.getItem('preloaded_' + btoa(imageArray[0])));
+    }
 
-        currentIndex = nextIndex;
-        setTimeout(transitionSlides, 7000);
+    // Show first slide (Botrix) immediately
+    $slides.hide().eq(0).show();
+
+    function transitionSlides() {
+      const nextIndex = (currentIndex + 1) % totalSlides;
+
+      if (nextIndex === 1) {
+        const nextSrc = imageArray[currentImageIndex];
+        const cached = localStorage.getItem('preloaded_' + btoa(nextSrc));
+        $cyclingImg.attr('src', cached || nextSrc);  // use cached if available
+        currentImageIndex = (currentImageIndex + 1) % imageArray.length;
       }
 
+      $slides.eq(currentIndex).fadeOut(1800, function () {
+        $(this).hide();
+        $slides.eq(nextIndex).fadeIn(1800);
+      });
+
+      currentIndex = nextIndex;
       setTimeout(transitionSlides, 7000);
-    });
+    }
 
-    window.addEventListener("message", function (event) {
-      if (event.origin === "https://botrix.live" && event.data === "alert") {
-        $("#botrixAlertBox").show();
-      }
-    });
-  </script>
+    setTimeout(transitionSlides, 7000);
+  });
+
+  // Botrix alert
+  window.addEventListener("message", function (event) {
+    if (event.origin === "https://botrix.live" && event.data === "alert") {
+      $("#botrixAlertBox").show();
+    }
+  });
+</script>
 </body>
 </html>
