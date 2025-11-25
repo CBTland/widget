@@ -7,101 +7,55 @@
   <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
 
   <style>
-    body {
-      background-color: transparent;
-      margin: 0;
-      padding: 0;
-    }
-
-    .slideshow {
-      position: relative;
-      width: 300px;
-      height: 120px;
-      overflow: hidden;
-    }
-
-    .slide {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      display: none;
-    }
-
-    .crop-frame {
-      position: relative;
-      width: 350px;
-      height: 100%;
-      left: -80px;
-    }
-
-    .follower-wrapper {
-      position: relative;
-      top: 2px;
-    }
-
-    .slide iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
+    body { background-color: transparent; margin: 0; padding: 0; }
+    .slideshow { position: relative; width: 300px; height: 120px; overflow: hidden; }
+    .slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; }
+    .crop-frame { position: relative; width: 350px; height: 100%; left: -80px; }
+    .follower-wrapper { position: relative; top: 2px; }
+    .slide iframe { width: 100%; height: 100%; border: none; }
   </style>
 </head>
 <body>
 
   <div class="slideshow">
-    <div class="slide">
-      <div class="crop-frame"><div class="follower-wrapper">
-        <iframe src="https://livecounts.io/embed/twitch-live-follower-counter/cbtstreams" frameborder="0"></iframe>
-      </div></div>
-    </div>
-    <div class="slide">
-      <div class="crop-frame"><div class="follower-wrapper">
-        <iframe src="https://livecounts.io/embed/youtube-live-subscriber-counter/UCgfkdHGl18cr1xkIDkG0g7g" frameborder="0"></iframe>
-      </div></div>
-    </div>
-    <div class="slide">
-      <div class="crop-frame"><div class="follower-wrapper">
-        <iframe src="https://livecounts.io/embed/kick-live-follower-counter/cbtstreams" frameborder="0"></iframe>
-      </div></div>
-    </div>
-    <div class="slide">
-      <div class="crop-frame"><div class="follower-wrapper">
-        <iframe src="https://livecounts.io/embed/youtube-live-subscriber-counter/UCqBktAcBNd3pgOTEOjf6jIA" frameborder="0"></iframe>
-      </div></div>
-    </div>
-    <div class="slide">
-      <div class="crop-frame"><div class="follower-wrapper">
-        <iframe src="https://livecounts.io/embed/twitter-live-follower-counter/cbtwizard" frameborder="0"></iframe>
-      </div></div>
-    </div>
+    <div class="slide"><div class="crop-frame"><div class="follower-wrapper">
+      <iframe src="https://livecounts.io/embed/twitch-live-follower-counter/cbtstreams" frameborder="0"></iframe>
+    </div></div></div>
+    <div class="slide"><div class="crop-frame"><div class="follower-wrapper">
+      <iframe src="https://livecounts.io/embed/youtube-live-subscriber-counter/UCgfkdHGl18cr1xkIDkG0g7g" frameborder="0"></iframe>
+    </div></div></div>
+    <div class="slide"><div class="crop-frame"><div class="follower-wrapper">
+      <iframe src="https://livecounts.io/embed/kick-live-follower-counter/cbtstreams" frameborder="0"></iframe>
+    </div></div></div>
+    <div class="slide"><div class="crop-frame"><div class="follower-wrapper">
+      <iframe src="https://livecounts.io/embed/youtube-live-subscriber-counter/UCqBktAcBNd3pgOTEOjf6jIA" frameborder="0"></iframe>
+    </div></div></div>
+    <div class="slide"><div class="crop-frame"><div class="follower-wrapper">
+      <iframe src="https://livecounts.io/embed/twitter-live-follower-counter/cbtwizard" frameborder="0"></iframe>
+    </div></div></div>
   </div>
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
   <script>
     $(document).ready(function () {
       const $slides = $(".slide");
       let currentIndex = 0;
       const totalSlides = $slides.length;
 
-      // Show first slide immediately
       $slides.hide().eq(0).show();
 
       function transitionSlides() {
         const nextIndex = (currentIndex + 1) % totalSlides;
 
-        $slides.eq(currentIndex).fadeOut(1000, function () {
+        $slides.eq(currentIndex).fadeOut(1800, function () {
           $(this).hide();
-          $slides.eq(nextIndex).fadeIn(1000);
+          $slides.eq(nextIndex).fadeIn(1800);
         });
 
         currentIndex = nextIndex;
-        setTimeout(transitionSlides, 7000); // exactly 7 seconds from now
+        setTimeout(transitionSlides, 7000);
       }
 
-      // Start after first 7-second display
       setTimeout(transitionSlides, 7000);
     });
   </script>
