@@ -19,18 +19,13 @@
       width: 300px; height: 80px; border: none;
     }
     #botrixActivityFeed { width: 400px; height: 120px; border: none; position: relative; top: -43px; }
-    
-    /* Preload both images instantly — OBS can't block this */
-    .preload { position: absolute; left: -9999px; top: -9999px; opacity: 0; }
+    .preload { position: absolute; left: -9999px; opacity: 0; }
   </style>
 </head>
 <body class="checking-auth">
 
-  <iframe id="botrixAlertBox"
-    src="https://botrix.live/alerts?bid=Vw%2Bc%2FCANc%2F1S5eA%2FevZ%2B5w">
-  </iframe>
+  <iframe id="botrixAlertBox" src="https://botrix.live/alerts?bid=Vw%2Bc%2FCANc%2F1S5eA%2FevZ%2B5w"></iframe>
 
-  <!-- Preload both images off-screen so they're ready instantly -->
   <img class="preload" src="https://cbtland.github.io/widget/rumble7.png" alt="">
   <img class="preload" src="https://cbtland.github.io/widget/boosteroid-partner.png" alt="">
 
@@ -39,7 +34,7 @@
       <iframe id="botrixActivityFeed" src="https://botrix.live/widgets/activityfeed/"></iframe>
     </div>
     <div class="slide">
-      <img id="cyclingImage" src="https://cbtland.github.io/widget/rumble7.png" alt="Cycling Image">
+      <img id="cyclingImage" src="https://cbtland.github.io/widget/rumble7.png" alt="Ad">
     </div>
   </div>
 
@@ -48,25 +43,20 @@
     $(document).ready(function () {
       const $slides = $(".slide");
       let currentIndex = 0;
-      const totalSlides = $slides.length;
-
-      const imageArray = [
+      const images = [
         "https://cbtland.github.io/widget/rumble7.png",
         "https://cbtland.github.io/widget/boosteroid-partner.png"
       ];
-      let currentImageIndex = 0;
+      let imgIndex = 0;
 
-      // Show first slide immediately
       $slides.hide().eq(0).show();
 
-      function transitionSlides() {
-        const nextIndex = (currentIndex + 1) % totalSlides;
+      function transition() {
+        const nextIndex = (currentIndex + 1) % 2;
 
-        // Change image BEFORE fade starts → already loaded → no flash
         if (nextIndex === 1) {
-          const nextSrc = imageArray[currentImageIndex];
-          $('#cyclingImage').attr('src', nextSrc);
-          currentImageIndex = (currentImageIndex + 1) % imageArray.length;
+          imgIndex = (imgIndex + 1) % images.length;
+          $("#cyclingImage").attr("src", images[imgIndex]);
         }
 
         $slides.eq(currentIndex).fadeOut(1800, function () {
@@ -75,16 +65,14 @@
         });
 
         currentIndex = nextIndex;
-        setTimeout(transitionSlides, 7000);
+        setTimeout(transition, 7000); // Exactly 7 seconds from now
       }
 
-      // Start after first 7 seconds
-      setTimeout(transitionSlides, 7000);
+      setTimeout(transition, 7000); // First transition exactly at 7s
     });
 
-    // Botrix alerts
-    window.addEventListener("message", function (event) {
-      if (event.origin === "https://botrix.live" && event.data === "alert") {
+    window.addEventListener("message", e => {
+      if (e.origin === "https://botrix.live" && e.data === "alert") {
         $("#botrixAlertBox").show();
       }
     });
