@@ -44,7 +44,7 @@
 
       $slides.hide().eq(0).show();
 
-      function transitionSlides() {
+      function transition() {
         const nextIndex = (currentIndex + 1) % totalSlides;
 
         $slides.eq(currentIndex).fadeOut(1800, function () {
@@ -53,10 +53,10 @@
         });
 
         currentIndex = nextIndex;
-        setTimeout(transitionSlides, 7000);
+        setTimeout(transition, 7000); // Exactly 7 seconds from now
       }
 
-      setTimeout(transitionSlides, 7000);
+      setTimeout(transition, 7000); // First transition exactly at 7s
     });
   </script>
 </body>
